@@ -43,7 +43,7 @@ int main(int argc, char **argv)
     int i, ThisTask, NTask;
     unsigned long int *sendbuf, *recvbuf;
     int *scounts, *sdisp, *rcounts, *rdisp;
-    //FILE *ptr_myfile;
+
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &ThisTask);
     MPI_Comm_size(MPI_COMM_WORLD, &NTask);
@@ -61,14 +61,10 @@ int main(int argc, char **argv)
             sdisp[i] = scounts[i-1] + sdisp[i-1];
             rdisp[i] = rcounts[i-1] + rdisp[i-1];
     }
-    //ptr_myfile=fopen("/nfs/nas-0-1/vat/mb2/snapdir_data/snapdir_085data/snappid_notsorted","rb");      
-    sendbuf = (unsigned long int *) malloc (32*100 * sizeof(unsigned long int));
-    recvbuf = (unsigned long int *) malloc (32*100 * sizeof(unsigned long int));
+    sendbuf = (unsigned long int *) malloc (33*100 * sizeof(unsigned long int));
+    recvbuf = (unsigned long int *) malloc (33*100 * sizeof(unsigned long int));
     readidfile(sendbuf,ThisTask);
-    //fseek(ptr_myfile, 32*100*ThisTask*sizeof(unsigned long int), SEEK_SET);
-    //fread(sendbuf,sizeof(unsigned long int),3200,ptr_myfile);
-    //printf("Tasks %d from proc %d is initial %lu, final %lu \n",NTask,ThisTask,sendbuf[0],sendbuf[32*100 - 1]);
-    MPI_Alltoallv(sendbuf, scounts, sdisp, MPI_UNSIGNED_LONG, recvbuf, rcounts, rdisp, MPI_UNSIGNED_LONG, MPI_COMM_WORLD);
+    // MPI_Alltoallv(sendbuf, scounts, sdisp, MPI_UNSIGNED_LONG, recvbuf, rcounts, rdisp, MPI_UNSIGNED_LONG, MPI_COMM_WORLD);
     MPI_Alltoallv_fix_buserror(sendbuf, scounts, sdisp, MPI_UNSIGNED_LONG, recvbuf, rcounts, rdisp, MPI_UNSIGNED_LONG, MPI_COMM_WORLD);
     printf("Tasks %d from proc %d is initial %lu, final %lu \n",NTask,ThisTask,recvbuf[0],recvbuf[32*100 - 1]);
     MPI_Finalize(); 
@@ -79,7 +75,7 @@ void readidfile(unsigned long int *sendbuf,int ThisTask)
 {
      FILE *ptr_myfile;
      ptr_myfile=fopen("/home/snapdir_data/snapdir_data/snappid_notsorted","rb");
-     fseek(ptr_myfile, 32*100*ThisTask*sizeof(unsigned long int), SEEK_SET);
-     fread(sendbuf,sizeof(unsigned long int),3200,ptr_myfile);
+     fseek(ptr_myfile, 33*100*ThisTask*sizeof(unsigned long int), SEEK_SET);
+     fread(sendbuf,sizeof(unsigned long int),3300,ptr_myfile);
 }
 

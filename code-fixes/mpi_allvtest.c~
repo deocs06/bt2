@@ -23,17 +23,24 @@ int MPI_Alltoallv_fix_buserror(void *sendbuf, int *sendcnts, int *sdispls,
    recvcnts_ncut = (int *) malloc(NTask * sizeof(int));
    sdispls_ncut = (int *) malloc(NTask * sizeof(int));
    rdispls_ncut = (int *) malloc(NTask * sizeof(int));
-
+   for (i=0; i<NTask; i++){
+        sendcnts_ncut[i] = sendcnts[i]/ncut;
+        recvcnts_ncut[i] = recvcnts[i]/ncut;
+        sdispls_ncut[i] = sdispls[i];
+        rdispls_ncut[i] = rdispls[i];
+   }
    for (j =0; j<ncut;j++){
-       for (i=0; i<NTask; i++){
-           sdispls_ncut[i] = sendcnts[i] * j/ ncut; 
-           sendcnts_ncut[i] = sendcnts[i] * (j+1)/ ncut - sdispls_ncut[i];
-           sdispls_ncut[i] += sdispls[i];
-           rdispls_ncut[i] = recvcnts[i] * j/ ncut;       
-           recvcnts_ncut[i] = recvcnts[i] * (j+1)/ ncut - rdispls_ncut[i];
-           rdispls_ncut[i] += rdispls[i];
-       }
+       if (j == ncut-1){
+           for (i=0; i<NTask; i++){
+               sendcnts_ncut[i] = sendcnts[i] - j*sendcnts_ncut[i];   
+               recvcnts_ncut[i] = recvcnts[i] - j*recvcnts_ncut[i];
+           }
+       } 
        MPI_Alltoallv(sendbuf, sendcnts_ncut, sdispls_ncut, sendtype, recvbuf, recvcnts_ncut, rdispls_ncut, recvtype, comm);
+       for (i=0; i<NTask; i++){
+           sdispls_ncut[i] = sdispls_ncut[i] + sendcnts_ncut[i];   
+           rdispls_ncut[i] = rdispls_ncut[i] + recvcnts_ncut[i];
+       }
    }
    return 1;       
 }

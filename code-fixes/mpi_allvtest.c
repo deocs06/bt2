@@ -68,8 +68,8 @@ int main(int argc, char **argv)
             sdisp[i] = scounts[i-1] + sdisp[i-1];
             rdisp[i] = rcounts[i-1] + rdisp[i-1];
     }
-    sendbuf = (unsigned long int *) malloc (33*100 * sizeof(unsigned long int));
-    recvbuf = (unsigned long int *) malloc (33*100 * sizeof(unsigned long int));
+    sendbuf = (unsigned long int *) malloc (32*100 * sizeof(unsigned long int));
+    recvbuf = (unsigned long int *) malloc (32*100 * sizeof(unsigned long int));
     readidfile(sendbuf,ThisTask);
     // MPI_Alltoallv(sendbuf, scounts, sdisp, MPI_UNSIGNED_LONG, recvbuf, rcounts, rdisp, MPI_UNSIGNED_LONG, MPI_COMM_WORLD);
     MPI_Alltoallv_fix_buserror(sendbuf, scounts, sdisp, MPI_UNSIGNED_LONG, recvbuf, rcounts, rdisp, MPI_UNSIGNED_LONG, MPI_COMM_WORLD);
@@ -82,7 +82,7 @@ void readidfile(unsigned long int *sendbuf,int ThisTask)
 {
      FILE *ptr_myfile;
      ptr_myfile=fopen("/home/snapdir_data/snapdir_data/snappid_notsorted","rb");
-     fseek(ptr_myfile, 33*100*ThisTask*sizeof(unsigned long int), SEEK_SET);
-     fread(sendbuf,sizeof(unsigned long int),3300,ptr_myfile);
+     fseek(ptr_myfile, 32*100*ThisTask*sizeof(unsigned long int), SEEK_SET);
+     fread(sendbuf,sizeof(unsigned long int),3200,ptr_myfile);
 }
 
